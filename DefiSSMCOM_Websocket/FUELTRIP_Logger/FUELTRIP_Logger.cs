@@ -17,6 +17,27 @@ using log4net;
 
 namespace FUELTRIP_Logger
 {
+    /// <summary>
+    /// WebSocket server type.
+    /// </summary>
+    public enum WebSocketServerType
+    {
+        Defi,
+        SSM,
+        ELM327,
+        Arduino
+    }
+
+    /// <summary>
+    /// Calculation mode of fuel consumption.
+    /// </summary>
+    public enum FuelConsumptionCalculationMode
+    {
+        EngineSpeed_And_InjectionPulseWidth,
+        MassAirFlow_And_AFRatio,
+        MassAirFlow
+    }
+
 	public class FUELTRIP_Logger
 	{
 		private const int CONNECT_RETRY_SEC = 5;
