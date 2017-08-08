@@ -50,7 +50,7 @@ namespace FUELTRIP_Logger
         //log4net
         private static readonly ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-		private Nenpi_Trip_Calculator _nenpi_trip_calc;
+		private FuelTripCalculator _nenpi_trip_calc;
 		private WebSocketServer _appServer;
 		private WebSocket _deficom_ws_client;
 		private WebSocket _ssmcom_ws_client;
@@ -82,7 +82,7 @@ namespace FUELTRIP_Logger
 		{
             this.WebsocketServer_ListenPortNo = 2014;
 
-			_nenpi_trip_calc = new Nenpi_Trip_Calculator ();
+			_nenpi_trip_calc = new FuelTripCalculator ();
             
             // Default KeepAliveInterval : 60ms
             this.KeepAliveInterval = 60;
@@ -217,13 +217,13 @@ namespace FUELTRIP_Logger
 				case (SectSpanJSONFormat.ModeCode):
 					SectSpanJSONFormat span_jsonobj = JsonConvert.DeserializeObject<SectSpanJSONFormat>(message);
 					span_jsonobj.Validate();
-					_nenpi_trip_calc.Sect_Span = span_jsonobj.sect_span*1000;
+					_nenpi_trip_calc.SectSpan = span_jsonobj.sect_span*1000;
 					response_msg(session, "NenpiCalc SectSpan Set to : " + span_jsonobj.sect_span.ToString() + "sec");
 					break;
 				case (SectStoreMaxJSONFormat.ModeCode):
 					SectStoreMaxJSONFormat storemax_jsonobj = JsonConvert.DeserializeObject<SectStoreMaxJSONFormat>(message);
 					storemax_jsonobj.Validate();
-					_nenpi_trip_calc.Sect_Store_Max = storemax_jsonobj.storemax;
+					_nenpi_trip_calc.SectStoreMax = storemax_jsonobj.storemax;
 					response_msg(session, "NenpiCalc SectStoreMax Set to : " + storemax_jsonobj.storemax.ToString());
 					break;
 				default:
@@ -279,7 +279,7 @@ namespace FUELTRIP_Logger
 			sectfueltrip_json.sect_gas = _nenpi_trip_calc.Sect_gas_array;
 			sectfueltrip_json.sect_trip = _nenpi_trip_calc.Sect_trip_array;
 			sectfueltrip_json.sect_gasmilage = _nenpi_trip_calc.Sect_gasmilage_array;
-			sectfueltrip_json.sect_span = _nenpi_trip_calc.Sect_Span;
+			sectfueltrip_json.sect_span = _nenpi_trip_calc.SectSpan;
 
             broadcast_websocket_msg(sectfueltrip_json.Serialize());
 

@@ -162,11 +162,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FuelTripCalcBase.cs" />
     <Compile Include="FUELTRIPJSONFormat.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FUELTRIP_Logger.cs" />
-    <Compile Include="Nenpi_Calculator.cs" />
+    <Compile Include="FuelTripCalc.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
