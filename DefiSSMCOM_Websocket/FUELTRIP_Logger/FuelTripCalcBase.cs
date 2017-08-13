@@ -11,16 +11,20 @@ namespace FUELTRIP_Logger
         /// <summary>
         /// Current speed
         /// </summary>
-        private double _current_speed;
+        public double CurrentSpeed
+        {
+            public get;
+            protected set;
+        }
 
         /// <summary>
         /// Trip scaling factor
         /// </summary>
-        private const double trip_coefficient = 1.0;
+        public readonly double TripCoefficient = 1.0;
         /// <summary>
         /// Gas consumption scaling factor
         /// </summary>
-        private const double gas_consumption_coefficient = 1.0;
+        public double GasConsumptionCoefficient = 1.0;
 
         // Stopwatch class
         protected readonly Stopwatch StopWatch;
@@ -29,23 +33,23 @@ namespace FUELTRIP_Logger
         /// <summary>
         /// Interval time to store cumlative trip and gas consumption into file.
         /// </summary>
-        private const int save_span = 5000;
+        private const int saveSpan = 5000;
 
         /// <summary>
         /// Elapsed time since last file save
         /// </summary>
-        private double _save_elapsed;
+        private double saveElapsed;
 
 
         /// <summary>
         ///  File path to store cumlative trip/gas data
         /// </summary>
-        private string _filepath;
+        private readonly string filePath;
 
         /// <summary>
         /// Folder path to store cumlative trip/gas data
         /// </summary>
-        private string _folderpath;
+        private readonly string folderPath;
 
         /// <summary>
         /// Interval time to store section gas and trip.
@@ -254,11 +258,11 @@ namespace FUELTRIP_Logger
             _sect_trip_gas_queue = new Queue<Trip_gas_Content>();
             _sect_trip_gas_latest = new Trip_gas_Content();
 
-            _save_elapsed = 0;
+            saveElapsed = 0;
 
             //データ格納しているファイルパスの指定
-            _folderpath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            _filepath = Path.Combine(_folderpath, "." + "FUELTRIP_Logger");
+            folderPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            filePath = Path.Combine(folderPath, "." + "FUELTRIP_Logger");
 
             load_trip_gas();
 
@@ -275,9 +279,9 @@ namespace FUELTRIP_Logger
         }
         private double get_momentary_trip(long elasped_millisecond)
         {
-            double speed = _current_speed;
+            double speed = CurrentSpeed;
 
-            double monentary_trip = trip_coefficient * (speed) / 3600 / 1000 * elasped_millisecond;
+            double monentary_trip = TripCoefficient * (speed) / 3600 / 1000 * elasped_millisecond;
 
             return monentary_trip;
         }
@@ -315,7 +319,7 @@ namespace FUELTRIP_Logger
             {
                 //ファイルを開く
                 System.IO.FileStream fs =
-                    new System.IO.FileStream(_filepath, System.IO.FileMode.Open);
+                    new System.IO.FileStream(filePath, System.IO.FileMode.Open);
 
                 try
                 {
@@ -341,7 +345,7 @@ namespace FUELTRIP_Logger
             catch (DirectoryNotFoundException ex)
             {
                 Console.WriteLine(ex.Message);
-                System.IO.Directory.CreateDirectory(@_folderpath);
+                System.IO.Directory.CreateDirectory(folderPath);
                 this.reset_sect_trip_gas();
             }
             catch (System.Security.SecurityException ex)
@@ -360,11 +364,40 @@ namespace FUELTRIP_Logger
                 new System.Xml.Serialization.XmlSerializer(typeof(Trip_gas_Content));
             //ファイルを開く
             System.IO.FileStream fs1 =
-                new System.IO.FileStream(_filepath, System.IO.FileMode.Create);
+                new System.IO.FileStream(filePath, System.IO.FileMode.Create);
             //シリアル化し、XMLファイルに保存する
             serializer1.Serialize(fs1, _total_trip_gas);
             //閉じる
             fs1.Close();
         }
+    }
+
+    public class Trip_gas_Content
+    {
+        public double trip { get; set; }
+        public double gas_consumption { get; set; }
+
+        public Trip_gas_Content()
+        {
+            reset();
+        }
+
+        private void reset()
+        {
+            this.trip = 0;
+            this.gas_consumption = 0;
+        }
+
+        public double gas_milage
+        {
+            get
+            {
+                if (this.gas_consumption == 0)
+                    return 0;
+                else
+                    return this.trip / this.gas_consumption;
+            }
+        }
+
     }
 }

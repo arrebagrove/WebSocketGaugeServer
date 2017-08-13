@@ -77,14 +77,14 @@ namespace FUELTRIP_Logger
 			}
 
 			//総燃費、総距離を5sごとに保存
-			if (_save_elapsed < save_span)
+			if (saveElapsed < saveSpan)
 			{
-				_save_elapsed += stopwatch_elasped;
+				saveElapsed += stopwatch_elasped;
 			}
 			else
 			{
 				save_trip_gas();
-				_save_elapsed = 0;
+				saveElapsed = 0;
 			}				
 		}
 
@@ -92,7 +92,7 @@ namespace FUELTRIP_Logger
 		{
 			double speed = _current_speed;
 
-			double monentary_trip = trip_coefficient * (speed) / 3600 / 1000 * elasped_millisecond;
+			double monentary_trip = TripCoefficient * (speed) / 3600 / 1000 * elasped_millisecond;
 
 			return monentary_trip;
 		}
@@ -105,7 +105,7 @@ namespace FUELTRIP_Logger
 
 			double momentary_gas_consumption;
 			if (tacho > 500) //アイドリング回転以下の場合は、燃料消費量に加えない
-				momentary_gas_consumption = gas_consumption_coefficient * (double)num_cylinder * (double)tacho * injetcer_capacity * (inj_pulse_width - injection_latency) / (7.2E9) * elasped_millisecond / 1000;
+				momentary_gas_consumption = GasConsumptionCoefficient * (double)num_cylinder * (double)tacho * injetcer_capacity * (inj_pulse_width - injection_latency) / (7.2E9) * elasped_millisecond / 1000;
 			else
 				momentary_gas_consumption = 0;
 
@@ -117,33 +117,6 @@ namespace FUELTRIP_Logger
 		}
 	}
 
-	public class Trip_gas_Content
-	{
-		public double trip { get; set; }
-		public double gas_consumption { get; set; }
 
-		public Trip_gas_Content()
-		{
-			reset ();
-		}
-
-		private void reset()
-		{
-			this.trip = 0;
-			this.gas_consumption = 0;
-		}
-
-		public double gas_milage
-		{
-			get
-			{
-				if (this.gas_consumption == 0)
-					return 0;
-				else
-					return this.trip / this.gas_consumption;
-			}
-		}
-
-	}
 }
 
